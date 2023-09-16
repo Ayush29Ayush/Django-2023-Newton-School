@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block start%}
+
+    {% comment %}
+    <h1>This is a h1 tag</h1>
+    <br />
+    <hr />
+    <h2>This is a h2 tag</h2>
+    <p>
+      Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates
+      possimus modi officia, repellat expedita aliquam facere architecto, ipsum
+      veritatis facilis at, saepe laboriosam ipsa id consequuntur dolorum
+      quibusdam quo ratione?
+    </p>
+    {% endcomment %} {% comment %} {{peoples}} {% endcomment %}
+
+    <h1 class="text-center">
+      Hey, this template is returned by the Django server
+    </h1>
+
+    <table class="container">
+      <tr>
+        <th>S. No</th>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Can Vote?</th>
+        {% comment %}
+        <th>Ages</th>
+        {% endcomment %}
+      </tr>
+
+      {% for people in peoples%}
+      <tr>
+        <td>{{forloop.counter}}</td>
+        <td>{{people.name}}</td>
+        <td>{{people.age}}</td>
+        <td>{% if people.age >= 18 %} 👍 {% else %} 👎 {% endif %}</td>
+      </tr>
+      {% endfor %} {% comment %} {% for people in peoples%}
+      <tr>
+        <td>{{people.0}}</td>
+        <td>{{people.1}}</td>
+        <td>{{people.2}}</td>
+        <td>{{people.3}}</td>
+      </tr>
+      {% endfor %} {% endcomment %}
+    </table>
+    <br />
+    <p>{{text}}</p>
+    <br />
+    <p>{{text|truncatechars:80}}</p>
+    <br />
+    {% comment %} {% if "apple" in vegetables %} Yes, Available {% elif "tomato"
+    in vegetables %} Yes, Tomato Available {%else%} No, Not Available {%endif%}
+    {% endcomment %}
+
+    <a href="/about/">about</a>
+    <a href="/contact/">contact</a>
+
+    
+{% endblock %}

@@ -1,0 +1,175 @@
+1. Create a virtual env and install django
+2. "django-admin startproject project_name"
+3. cd project_name
+4. code .
+
+5. "python manage.py startapp app_name", you can create multiple apps like this in a single project.
+6. "python manage.py runserver"
+7. To run the server in different server, use "python manage.py runserver 0.0.0.0:5000", this will run the server in port 5000
+8. In the settings.py of your "project_name", in the "INSTALLED_APPS", add your "app_name"
+
+General Practice
+Example - 
+# INSTALLED_APPS = [
+#     'django.contrib.admin',
+#     'django.contrib.auth',
+#     'django.contrib.contenttypes',
+#     'django.contrib.sessions',
+#     'django.contrib.messages',
+#     'django.contrib.staticfiles',
+    
+# ]
+
+# EXTERNAL_APPS = [
+#     'accounts',
+#     'home'
+# ]
+
+# INSTALLED_APPS += EXTERNAL_APPS
+
+9. Now add your urls in the project_name's urls.py file.
+10. Now write your urls and views of your app in your app_name folder.
+11. Learn about templates, just google search "django template tags".
+12. Create a model in your app's models.py
+13. After making your model or making changes inn your model, always run "python manage.py makemigrations"
+14. Then run "python manage.py migrate"
+
+15. Now we will use shell i.e the command line of django. "python manage.py shell".
+"
+from home.models import *
+>>> student = Student(name="Ayushhh", age = 22, email = "ayush@gmail.com", address="Delhi")
+>>> student
+<Student: Student object (None)>
+>>> student.save()
+>>> student        
+<Student: Student object (1)>
+"
+16. You can also use "student = Student.objects.create(name="Ayushhh", age = 22, email = "ayush@gmail.com", address="Delhi")". Using this we dont need to save() the object.
+17. objects is a model manager provided by django.
+18. "Student.objects.all()"
+19. "Student.objects.all()[0].name".
+
+20. shell is also helpful for running custom functions which cannot be executed otherwise... Try running the function in home.utils file.
+
+21. CRUD
+# CREATE =>Student.objects.create(name="Ayushhh", age = 22, email = "ayush@gmail.com", address="Delhi")
+# READ => Student.objects.all()
+# UPDATE => Student.objects.filter(id=2).update(name="Apple")
+# DELETE => Student.objects.get(id=1).delete()
+
+22. Now we will be developing a receipe app
+23. Django ke andar agar we want to send data from frontend to backend, then we need to add {% csrf_token %}. Frontend ke form mein method is compulsory and each input field should contain name same as model fields.
+
+24. core ke settings mein add STATIC_URL, STATIC_ROOT, MEDIA_ROOT and MEDIA_URL
+25. core ke urls mein add karo static urls wala code
+26. lecture 9 very imp, do watch it again
+27. Pass dynamic urls in template rather than hardcoding urls
+
+28. from django.contrib.auth.models import User      from django.contrib import messages          from django.contrib.auth import authenticate, login, logout       from django.contrib.auth.decorators import login_required
+
+
+// Django Queries - 1
+29. We can use order_by('parameter_name') to get objects in ascending order
+30. We can use order_by('-parameter_name') to get objects in descending order
+
+31. We can use limit here by using slicing operator. Ex -> recipe.objects.all().order_by('-recipe_view_count')[0:100]. Similar to LIMIT 100
+
+
+32. recipe.objects.filter(recipe_view_count__gte = 55). Shows objects having count greater than equal to 55.
+33. recipe.objects.filter(recipe_view_count__lte = 55). Shows objects having count lower than equal to 55.
+
+// Data is returned in the form of raw sql data so to understand that django converts them into queryset which is a collection of objects.
+// model.objects.get or model.objects.filter etc give queryset as output
+
+34. python manage.py createsuperuser
+Username - ayush1
+Email - ayush.senapati@cozentus.com
+Password - Ab@123456
+
+35. This will sort the data in ascending order.
+class Meta:
+ordering = ['department'] 
+
+36. student_id = models.OneToOneField(StudentID, related_name="studentid", on_delete=models.CASCADE)
+Isse no one can have duplicate ids, one student one unique id
+
+// Django Queries - 2
+queryset = Student.objects.filter(student_name__startswith = "abh"). This is same as SQL's LIKE("abh%")
+queryset = Student.objects.filter(student_email__endswith = ".org"). This is same as SQL's LIKE("%.org")
+queryset = Student.objects.filter(student_name__icontains = "abc"). This is same as SQL's LIKE("%abc%")
+queryset = Student.objects.filter(student_address__icontains = "abc"). This is same as SQL's LIKE("%abc%")
+queryset = Student.objects.filter(department__department = "Civil"). Here we are accessing the fk department and then department table se "department" ka data laa rahe who have department="Civil".
+queryset = Student.objects.filter(department__department__icontains = "Civ").
+pehla wala "__" fk ko access karne ke liye ho gaya and dusra wala "__" django wala functionality ke liye
+dept = ['Civil','Electrical']
+queryset = Student.objects.filter(department__department__in = dept). Similar to SQL's IN.
+//! Filter means include karna and Exclude means remove ya exclude karna apne findings se.
+queryset = Student.objects.exclude(department__department = "Civil"). 
+
+Now how do we know whether the command we ran gave any data inside queryset or not?
+Approach 1: len(queryset). If it is more than 0 means it contains some data.
+Approach 2: queryset.exists(). Returns true or false based on whether it contains any data or not.
+
+How to LIMIT data? => queryset[0:100]
+
+Ques) How to check the data inside queryset?
+Ans: queryset.values()
+Example: queryset.values()[0]['student_age']
+
+Ques) Get data in reverse order?
+Approach 1: order_by("-parameter_name")
+Approach 2: queryset.reverse()
+
+
+
+
+Example - 
+>>> queryset = Student.objects.filter(student_name__startswith = "a")  
+>>> queryset
+<QuerySet [<Student: Aaron Brown>, <Student: Abhijeet Gupta>, <Student: Albert Phelps>, <Student: Alice Martinez>, <Student: Alvin Webb>, <Student: Alyssa Brown>, <Student: Alyssa Miranda>, <Student: Amber Willis>, <Student: Amy Johnson>, <Student: Andrea Kennedy>, <Student: Anita Christensen>, <Student: Anna Thomas>, <Student: Anthony Lee>, <Student: Anthony Rose>, <Student: Antonio Bailey>, <Student: Antonio Valdez>, <Student: April King>, <Student: April Morgan>, <Student: Audrey Roy>]>
+>>> queryset[0]
+<Student: Aaron Brown>
+>>> queryset[0].student_id
+<StudentID: STU-0846>
+>>> queryset[0].id or queryset[0].pk
+75
+>>> queryset[0].department
+<Department: Civil>
+>>> queryset[0].department.dept_established_from
+<answer: xyz>
+Listen from video 10:00 mins very imp concept on how to access data from another table based on fk from current table.
+Esse hi "." lagate jao and dusre table se data nikalte jao
+
+>>> queryset = Student.objects.filter(student_email__endswith = ".org")                                     
+>>> queryset    
+<QuerySet [<Student: Albert Phelps>, <Student: Alvin Webb>, <Student: Alyssa Brown>, <Student: Alyssa Miranda>, <Student: Anita Christensen>, <Student: Anna Thomas>, <Student: April King>, <Student: Audrey Roy>, <Student: Brandi Lin>, <Student: Carrie Castro>, <Student: Christine Hunt>, <Student: Christopher Rice>, <Student: Clinton Carpenter>, <Student: Daniel James>, <Student: Darren Weaver>, <Student: 
+David Harris>, <Student: Derrick Davis>, <Student: Donna Patel>, <Student: Gina Ortega>, <Student: Isaac Smith>, '...(remaining elements truncated)...']>
+
+>>> queryset = Student.objects.filter(department__department__icontains = "Civ")
+>>> queryset.count()
+25
+
+
+
+
+37. Filter function works on data horizontally i.e row wise, but aggregate function like in SQL works vertically i.e on entire columns. In SQL, AVG(), SUM(), etc. wale yaad karo which used to work on columns.
+
+38. Jab multiple columns pe functions lagana hai toh annotate function ka use karenge, aggregate functions only for one column.
+
+Example :-
+>>> from django.db.models import *
+>>> from vege.models import *
+>>> Student.objects.aggregate(Avg('student_age')) 
+{'student_age__avg': 24.772727272727273}
+>>> Student.objects.aggregate(Max('student_age')) 
+{'student_age__max': 30}
+>>> Student.objects.aggregate(Min('student_age')) 
+{'student_age__min': 18}
+>>> Student.objects.aggregate(Sum('student_age')) 
+{'student_age__sum': 3270}
+
+>>> student = Student.objects.values('student_age').annotate(Count('student_age'))
+>>> student
+<QuerySet [{'student_age': 18, 'student_age__count': 1}, {'student_age': 20, 'student_age__count': 14}, {'student_age': 21, 'student_age__count': 12}, {'student_age': 22, 'student_age__count': 13}, {'student_age': 23, 'student_age__count': 10}, {'student_age': 24, 'student_age__count': 8}, {'student_age': 25, 'student_age__count': 16}, {'student_age': 26, 'student_age__count': 15}, {'student_age': 27, 'student_age__count': 8}, {'student_age': 28, 'student_age__count': 17}, {'student_age': 29, 'student_age__count': 10}, {'student_age': 30, 'student_age__count': 8}]>  
+
+39. 
